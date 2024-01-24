@@ -107,7 +107,7 @@ const Home = () => {
       {<Navbar index={index} handleIndex={handleIndex} isSmallDevice={isSmallDevice} />}
 
       {/* Home page main section */}
-      <Box sx={{ backgroundColor: 'white', width: "100vw", minHeight: isSmallDevice ? "80vh" : 'auto', display: 'flex',justifyContent:isSmallDevice?"space-between":"normal", flexDirection: isSmallDevice ? "column" : "row" }} ref={homeRef}>
+      <Box sx={{ backgroundColor: 'white', width: "100vw", display: 'flex', flexDirection: isSmallDevice ? "column" : "row" }} ref={homeRef}>
         <Box sx={{ width: isSmallDevice ? "100%" : "50%", backgroundColor: "white", justifyContent: 'space-between', display: 'flex', flexDirection: "column", alignItems: isSmallDevice ? "center" : 'flex-end' }}>
           <Box sx={{ fontSize: '50px', fontWeight: 800, color: '#003140', display: "flex", flexDirection: "column", alignItems: "center", paddingTop: "50px" }}>
             <Typography sx={{ fontSize: isSmallDevice ? "20px" : '30px', fontWeight: 400, color: '#003140' }}>Hi there!</Typography>
