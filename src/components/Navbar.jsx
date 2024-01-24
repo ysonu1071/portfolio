@@ -98,10 +98,6 @@ const Navbar = ({ index, handleIndex, isSmallDevice }) => {
             </Box>
 
           </DialogContent>
-          <DialogActions>
-            <Button onClick={handleClose}>Disagree</Button>
-            <Button onClick={handleClose}>Agree</Button>
-          </DialogActions>
         </Dialog>
 
       </Box>

@@ -1,17 +1,18 @@
 import React, { useEffect, useRef, useState } from 'react'
 import Navbar from '../components/Navbar'
-import { Box, Button, IconButton, Link, TextField, Typography } from '@mui/material'
+import { Alert, Box, Button, IconButton, Link, Snackbar, TextField, Typography } from '@mui/material'
 import sonuImage from "../assets/sonu.jpeg"
 import computerImg from "../assets/comp.gif"
 import projectImg from "../assets/project.gif"
 import constactImg from "../assets/constact.gif"
+import resume from "../assets/Resume-Sonu Kumar.pdf"
 import { TypeAnimation } from 'react-type-animation';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import CopyrightIcon from '@mui/icons-material/Copyright';
 import { useMediaQuery } from '@mui/material'
 
-const ExampleComponent = ({isSmallDevice}) => {
+const ExampleComponent = ({ isSmallDevice }) => {
   return (
     <TypeAnimation
       sequence={[
@@ -29,7 +30,7 @@ const ExampleComponent = ({isSmallDevice}) => {
       ]}
       wrapper="code"
       speed={50}
-      style={{ fontSize:isSmallDevice?"14px" :'20px', display: 'inline-block', }}
+      style={{ fontSize: isSmallDevice ? "14px" : '20px', display: 'inline-block', }}
       repeat={Infinity}
     />
   );
@@ -38,6 +39,16 @@ const ExampleComponent = ({isSmallDevice}) => {
 const Home = () => {
   const [index, setIndex] = useState(0);
   const isSmallDevice = useMediaQuery('(max-width:425px)');
+  const [scrollPosition, setScrollPosition] = useState(0)
+  const [open, setOpen] = React.useState(false);
+
+  const homeRef = useRef();
+  const aboutRef = useRef();
+  const projectRef = useRef();
+  const contactRef = useRef();
+
+  console.log(scrollPosition, 'this is scroll')
+
 
   const handleIndex = (ind) => {
     setIndex(ind)
@@ -57,25 +68,58 @@ const Home = () => {
     }
   }
 
-  const homeRef = useRef();
-  const aboutRef = useRef();
-  const projectRef = useRef();
-  const contactRef = useRef();
+  const handleClick = () => {
+    setOpen(true);
+  };
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
+  };
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+
+      const handleScroll = () => {
+        const position = window.scrollY;
+        setScrollPosition(position);
+      }
+
+      window.addEventListener("scroll", handleScroll);
+
+      return () => window.removeEventListener("scroll", handleScroll);
+    }
+
+  }, [])
+
+  useEffect(() => {
+    if (scrollPosition == 0) {
+      setIndex(0)
+    }
+  }, [scrollPosition])
+
 
   return (
     <div>
-      {<Navbar index={index} handleIndex={handleIndex} isSmallDevice={isSmallDevice}/>}
+      {<Navbar index={index} handleIndex={handleIndex} isSmallDevice={isSmallDevice} />}
 
       {/* Home page main section */}
-      <Box sx={{ backgroundColor: 'white', width: "100vw", display: 'flex', flexDirection: isSmallDevice ?"column" : "row" }} ref={homeRef}>
-        <Box sx={{ width: isSmallDevice ? "100%" : "50%", backgroundColor: "white", justifyContent: 'space-between', display: 'flex', flexDirection: "column", alignItems:isSmallDevice?"center": 'flex-end' }}>
+      <Box sx={{ backgroundColor: 'white', width: "100vw", minHeight: isSmallDevice ? "95vh" : '', display: 'flex', flexDirection: isSmallDevice ? "column" : "row" }} ref={homeRef}>
+        <Box sx={{ width: isSmallDevice ? "100%" : "50%", backgroundColor: "white", justifyContent: 'space-between', display: 'flex', flexDirection: "column", alignItems: isSmallDevice ? "center" : 'flex-end' }}>
           <Box sx={{ fontSize: '50px', fontWeight: 800, color: '#003140', display: "flex", flexDirection: "column", alignItems: "center", paddingTop: "50px" }}>
-            <Typography sx={{ fontSize:isSmallDevice? "20px": '30px', fontWeight: 400, color: '#003140' }}>Hi there!</Typography>
-            <Typography sx={{ fontSize: isSmallDevice? "30px": '50px', fontWeight: 800, color: '#003140' }}>I am sonu kumar</Typography>
-            <ExampleComponent isSmallDevice={isSmallDevice}/>
-            <Button variant='contained' sx={{ marginTop: "50px", backgroundColor: "#00719C", '&:hover': { backgroundColor: "#003140" } }}>Resume</Button>
+            <Typography sx={{ fontSize: isSmallDevice ? "20px" : '30px', fontWeight: 400, color: '#003140' }}>Hi there!</Typography>
+            <Typography sx={{ fontSize: isSmallDevice ? "30px" : '50px', fontWeight: 800, color: '#003140' }}>I am sonu kumar</Typography>
+            <ExampleComponent isSmallDevice={isSmallDevice} />
+            <Button variant='contained' sx={{ marginTop: "50px",padding:'0px', backgroundColor: "#00719C", '&:hover': { backgroundColor: "#003140" } }} onClick={handleClick}>
+              <a className="button" style={{color:'white', textDecoration:'none', padding:"5px 10px"}} href={resume} download="sonu-kumar-resume.pdf">
+              Resume
+              </a>
+            </Button>
           </Box>
-          {!isSmallDevice &&<Box sx={{ backgroundColor: '#003140', width: "100%", height: "4.5vw" }}></Box>}
+          {!isSmallDevice && <Box sx={{ backgroundColor: '#003140', width: "100%", height: "4.5vw" }}></Box>}
         </Box>
         <Box
           component="img"
@@ -110,9 +154,9 @@ const Home = () => {
             src={sonuImage}>
           </Box>
         </Box>}
-        <Box sx={{ width: isSmallDevice ? "100%" : "50%", minHeight: "100vh", display: 'flex', flexDirection: "column", alignItems: isSmallDevice ? "center" : 'flex-start', paddingTop: '50px', color: "white", padding: isSmallDevice ? "20px" : "0px" }}>
-          <Typography variant={isSmallDevice ? "h4" :'h3'} style={{marginTop:isSmallDevice?'0px':'50px'}}>About me</Typography>
-          <Typography sx={{ width: "100%", paddingRight: isSmallDevice ? "0px" : "100px", marginTop: "20px" }}>I'm a passionate and results-driven Full Stack Developer with a knack for creating robust and scalable web applications. With a diverse skill set that spans both front-end and back-end technologies, I bring a holistic approach to web development. Explore my portfolio to discover the projects I've worked on and the skills I bring to the table</Typography>
+        <Box sx={{ width: isSmallDevice ? "100%" : "50%", minHeight: "100vh", display: 'flex', flexDirection: "column", alignItems: isSmallDevice ? "flex-start" : 'flex-start', paddingTop: '50px', color: "white", padding: isSmallDevice ? "20px" : "0px" }}>
+          <Typography variant={isSmallDevice ? "h4" : 'h3'} style={{ marginTop: '50px', width: "100%", textAlign: isSmallDevice ? 'center' : "initial" }}>About me</Typography>
+          <Typography sx={{ width: "100%", paddingRight: isSmallDevice ? "0px" : "100px", marginTop: "20px", textAlign: "justify" }}>I'm a passionate and results-driven Full Stack Developer with a knack for creating robust and scalable web applications. With a diverse skill set that spans both front-end and back-end technologies, I bring a holistic approach to web development. Explore my portfolio to discover the projects I've worked on and the skills I bring to the table</Typography>
           <Box sx={{ marginTop: "20px" }}>
             <Typography variant='h6' sx={{}}>Educatiion</Typography>
             <ul style={{ paddingLeft: '50px', display: 'flex', flexDirection: "column", gap: '10px' }}>
@@ -122,7 +166,7 @@ const Home = () => {
           </Box>
           <Box sx={{ marginTop: "20px" }}>
             <Typography variant='h6'>Skills</Typography>
-            <Box sx={{ display: 'flex' }}>
+            <Box sx={{ display: 'flex', }}>
               <ul style={{ paddingLeft: '50px', display: 'flex', flexDirection: "column", gap: '10px' }}>
                 <li>React</li>
                 <li>React Native</li>
@@ -148,7 +192,7 @@ const Home = () => {
 
 
         <Box sx={{ width: isSmallDevice ? "100%" : "60%", minHeight: "100vh", display: 'flex', flexDirection: "column", alignItems: isSmallDevice ? "center" : 'flex-start', paddingTop: '50px', color: "#003140", paddingLeft: isSmallDevice ? "20px" : '100px', paddingRight: isSmallDevice ? "20px" : '0px' }}>
-          <Typography variant={isSmallDevice ? "h4" :'h3'}>projects</Typography>
+          <Typography variant={isSmallDevice ? "h4" : 'h3'}>projects</Typography>
 
           {isSmallDevice && <Box sx={{ width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: 'center', marginTop: "30px" }}>
             <Box
@@ -166,7 +210,7 @@ const Home = () => {
             </Box>
           </Box>}
 
-          <Box sx={{ width: '100%', display: "flex", flexWrap: "wrap", gap: "20px", marginTop: '50px', color: 'white', marginBottom:isSmallDevice? "20px": '0px' }}>
+          <Box sx={{ width: '100%', display: "flex", flexWrap: "wrap", gap: "20px", marginTop: '50px', color: 'white', marginBottom: isSmallDevice ? "20px" : '0px' }}>
             <Box sx={{ width: isSmallDevice ? "100%" : "40%", height: '100px', backgroundColor: "#003140", borderRadius: '10px', display: 'flex', justifyContent: 'center', alignItems: "center" }}>comming soon</Box>
             <Box sx={{ width: isSmallDevice ? "100%" : "40%", height: '100px', backgroundColor: "#003140", borderRadius: '10px', display: 'flex', justifyContent: 'center', alignItems: "center" }}>comming soon</Box>
             <Box sx={{ width: isSmallDevice ? "100%" : "40%", height: '100px', backgroundColor: "#003140", borderRadius: '10px', display: 'flex', justifyContent: 'center', alignItems: "center" }}>comming soon</Box>
@@ -207,37 +251,37 @@ const Home = () => {
             src={constactImg}>
           </Box>
         </Box>}
-        <Box sx={{ width: isSmallDevice ? "100%": "50%", minHeight: "100vh", display: 'flex', flexDirection: "column", alignItems:isSmallDevice ? "center": 'flex-start', paddingTop: '50px', color: "white" ,paddingX:isSmallDevice?"20px":"0px" }}>
-          <Typography variant={isSmallDevice ? "h4" :'h3'}>Contact us</Typography>
-          {isSmallDevice && <Box sx={{ width: "100%", display: "flex", justifyContent: "center", marginTop:"50px" }}>
-          <Box
-            component="img"
-            sx={{
-              // height: 233,
-              width: "80%",
-              height: 'auto',
-              borderRadius: "10%"
-            }}
-            alt="The house from the offer."
-            src={constactImg}>
-          </Box>
-        </Box>}
-          <Box sx={{ marginTop: "50px", display: 'flex', flexDirection: 'column', gap: "20px", alignItems:"center", marginBottom:isSmallDevice?'50px':'0px' }}>
+        <Box sx={{ width: isSmallDevice ? "100%" : "50%", minHeight: "100vh", display: 'flex', flexDirection: "column", alignItems: isSmallDevice ? "center" : 'flex-start', paddingTop: '50px', color: "white", paddingX: isSmallDevice ? "20px" : "0px" }}>
+          <Typography variant={isSmallDevice ? "h4" : 'h3'}>Contact us</Typography>
+          {isSmallDevice && <Box sx={{ width: "100%", display: "flex", justifyContent: "center", marginTop: "50px" }}>
+            <Box
+              component="img"
+              sx={{
+                // height: 233,
+                width: "95%",
+                height: 'auto',
+                borderRadius: "10%"
+              }}
+              alt="The house from the offer."
+              src={constactImg}>
+            </Box>
+          </Box>}
+          <Box sx={{ marginTop: "50px", display: 'flex', flexDirection: 'column', gap: "20px", alignItems: "center", marginBottom: isSmallDevice ? '50px' : '0px' }}>
 
             <Box>
               <Typography>Name:</Typography>
-              <TextField id="outlined-basic" sx={{ backgroundColor: 'white', borderRadius: "10px", width:isSmallDevice?"250px": '300px' }} size='small' variant="outlined" />
+              <TextField id="outlined-basic" sx={{ backgroundColor: 'white', borderRadius: "10px", width: isSmallDevice ? "85vw" : '300px' }} size='small' variant="outlined" />
             </Box>
             <Box>
               <Typography>Email:</Typography>
-              <TextField id="outlined-basic" sx={{ backgroundColor: 'white', borderRadius: "10px", width:isSmallDevice?"250px": '300px' }} size='small' variant="outlined" />
+              <TextField id="outlined-basic" sx={{ backgroundColor: 'white', borderRadius: "10px", width: isSmallDevice ? "85vw" : '300px' }} size='small' variant="outlined" />
             </Box>
             <Box>
               <Typography>Message:</Typography>
-              <TextField id="outlined-basic" multiline minRows={3} sx={{ backgroundColor: 'white', borderRadius: "10px", width:isSmallDevice?"250px": '300px' }} size='small' variant="outlined" />
+              <TextField id="outlined-basic" multiline minRows={3} sx={{ backgroundColor: 'white', borderRadius: "10px", width: isSmallDevice ? "85vw" : '300px' }} size='small' variant="outlined" />
             </Box>
-            <Box sx={{ width:isSmallDevice?"250px": "300px", display: 'flex', justifyContent: "flex-end" }}>
-              <Button variant='contained' sx={{ backgroundColor: "#00719C", '&:hover': { backgroundColor: "#003140" } }}>send</Button>
+            <Box sx={{ width: isSmallDevice ? "85vw" : "300px", display: 'flex', justifyContent: "flex-end" }}>
+              <Button variant='contained' sx={{ backgroundColor: "#00719C", '&:hover': { backgroundColor: "#003140" } }} >send</Button>
             </Box>
           </Box>
 
@@ -245,7 +289,7 @@ const Home = () => {
       </Box>
 
       {/* footer section */}
-      <Box sx={{ minHeight: "100px", display: 'flex', alignItems: "center", justifyContent: 'space-between', backgroundColor: "lightgray", padding:isSmallDevice? '10px 0px' : "0px 100px", flexDirection:isSmallDevice ?'column-reverse':"row", }}>
+      <Box sx={{ minHeight: "100px", display: 'flex', alignItems: "center", justifyContent: 'space-between', backgroundColor: "lightgray", padding: isSmallDevice ? '10px 0px' : "0px 100px", flexDirection: isSmallDevice ? 'column-reverse' : "row", }}>
         <Box>
           <Typography sx={{ display: 'flex', alignItems: "center" }}><CopyrightIcon /> All rights reserved 2024</Typography>
         </Box>
@@ -267,6 +311,18 @@ const Home = () => {
           </Box>
         </Box>
       </Box>
+
+      <Snackbar anchorOrigin={{vertical:"bottom", horizontal:"right"}} open={open} autoHideDuration={3000} onClose={handleClose}>
+        <Alert
+          onClose={handleClose}
+          severity="success"
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          Resume downloaded successfully
+        </Alert>
+      </Snackbar>
+
     </div>
   )
 }
