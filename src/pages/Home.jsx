@@ -41,6 +41,10 @@ const Home = () => {
   const isSmallDevice = useMediaQuery('(max-width:425px)');
   const [scrollPosition, setScrollPosition] = useState(0)
   const [open, setOpen] = React.useState(false);
+  const [name, setName]= useState('')
+  const [email, setEmail]= useState('')
+  const [message, setMessage]= useState('')
+  const [alertData, setAlertData]= useState({severity:"success", alertMessage:''})
 
   const homeRef = useRef();
   const aboutRef = useRef();
@@ -68,8 +72,14 @@ const Home = () => {
     }
   }
 
-  const handleClick = () => {
+  const handleClick = (type) => {
+    if(type == 'resume'){
+      setAlertData({severity:"success", alertMessage:"Resume downloaded successfully"})
+    }else if("validation"){
+      setAlertData({severity:"error", alertMessage:'All fields is required'})
+    }
     setOpen(true);
+
   };
 
   const handleClose = (event, reason) => {
@@ -79,6 +89,12 @@ const Home = () => {
 
     setOpen(false);
   };
+
+  const handelSend = () => {
+    if(name == '' || email == '' || message == ''){
+      handleClick('validation')
+    }
+  }
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -113,7 +129,7 @@ const Home = () => {
             <Typography sx={{ fontSize: isSmallDevice ? "20px" : '30px', fontWeight: 400, color: '#003140' }}>Hi there!</Typography>
             <Typography sx={{ fontSize: isSmallDevice ? "30px" : '50px', fontWeight: 800, color: '#003140' }}>I am sonu kumar</Typography>
             <ExampleComponent isSmallDevice={isSmallDevice} />
-            <Button variant='contained' sx={{ marginTop: "50px",padding:'0px', backgroundColor: "#00719C", '&:hover': { backgroundColor: "#003140" } }} onClick={handleClick}>
+            <Button variant='contained' sx={{ marginTop: "50px",padding:'0px', backgroundColor: "#00719C", '&:hover': { backgroundColor: "#003140" } }} onClick={()=>handleClick('resume')}>
               <a className="button" style={{color:'white', textDecoration:'none', padding:"5px 10px"}} href={resume} download="sonu-kumar-resume.pdf">
               Resume
               </a>
@@ -270,18 +286,19 @@ const Home = () => {
 
             <Box>
               <Typography>Name:</Typography>
-              <TextField id="outlined-basic" sx={{ backgroundColor: 'white', borderRadius: "10px", width: isSmallDevice ? "85vw" : '300px' }} size='small' variant="outlined" />
+              <TextField id="outlined-basic" sx={{ backgroundColor: 'white', borderRadius: "10px", width: isSmallDevice ? "85vw" : '300px' }} size='small' variant="outlined" value={name} onChange={(e)=> setName(e.target.value)} />
             </Box>
             <Box>
               <Typography>Email:</Typography>
-              <TextField id="outlined-basic" sx={{ backgroundColor: 'white', borderRadius: "10px", width: isSmallDevice ? "85vw" : '300px' }} size='small' variant="outlined" />
+              <TextField id="outlined-basic" sx={{ backgroundColor: 'white', borderRadius: "10px", width: isSmallDevice ? "85vw" : '300px' }} size='small' variant="outlined" value={email} onChange={(e)=> setEmail(e.target.value)}/>
             </Box>
             <Box>
               <Typography>Message:</Typography>
-              <TextField id="outlined-basic" multiline minRows={3} sx={{ backgroundColor: 'white', borderRadius: "10px", width: isSmallDevice ? "85vw" : '300px' }} size='small' variant="outlined" />
+              <TextField id="outlined-basic" multiline minRows={3} sx={{ backgroundColor: 'white', borderRadius: "10px", width: isSmallDevice ? "85vw" : '300px' }} size='small' variant="outlined" 
+              value={message} onChange={(e)=> setMessage(e.target.value)}/>
             </Box>
             <Box sx={{ width: isSmallDevice ? "85vw" : "300px", display: 'flex', justifyContent: "flex-end" }}>
-              <Button variant='contained' sx={{ backgroundColor: "#00719C", '&:hover': { backgroundColor: "#003140" } }} >send</Button>
+              <Button variant='contained' sx={{ backgroundColor: "#00719C", '&:hover': { backgroundColor: "#003140" } }} onClick={handelSend} >send</Button>
             </Box>
           </Box>
 
@@ -315,11 +332,11 @@ const Home = () => {
       <Snackbar anchorOrigin={{vertical:"bottom", horizontal:"right"}} open={open} autoHideDuration={3000} onClose={handleClose}>
         <Alert
           onClose={handleClose}
-          severity="success"
+          severity={alertData.severity}
           variant="filled"
           sx={{ width: '100%' }}
         >
-          Resume downloaded successfully
+          {alertData.alertMessage}
         </Alert>
       </Snackbar>
 
