@@ -1,16 +1,21 @@
 import React, { useEffect, useRef, useState } from 'react'
 import Navbar from '../components/Navbar'
-import { Alert, Box, Button, IconButton, Link, Snackbar, TextField, Typography } from '@mui/material'
+import { Alert, Box, Button, Dialog, DialogActions, DialogContent, IconButton, Link, Slide, Snackbar, TextField, Typography } from '@mui/material'
 import sonuImage from "../assets/sonu.jpeg"
 import computerImg from "../assets/comp.gif"
 import projectImg from "../assets/project.gif"
 import constactImg from "../assets/constact.gif"
+import success from "../assets/success.gif"
 import resume from "../assets/Resume-Sonu Kumar.pdf"
 import { TypeAnimation } from 'react-type-animation';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import CopyrightIcon from '@mui/icons-material/Copyright';
 import { useMediaQuery } from '@mui/material'
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 const ExampleComponent = ({ isSmallDevice }) => {
   return (
@@ -41,10 +46,11 @@ const Home = () => {
   const isSmallDevice = useMediaQuery('(max-width:425px)');
   const [scrollPosition, setScrollPosition] = useState(0)
   const [open, setOpen] = React.useState(false);
-  const [name, setName]= useState('')
-  const [email, setEmail]= useState('')
-  const [message, setMessage]= useState('')
-  const [alertData, setAlertData]= useState({severity:"success", alertMessage:''})
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [message, setMessage] = useState('')
+  const [alertData, setAlertData] = useState({ severity: "success", alertMessage: '' })
+  const [openSuccess, setOpenSuccess] = useState(false)
 
   const homeRef = useRef();
   const aboutRef = useRef();
@@ -73,10 +79,12 @@ const Home = () => {
   }
 
   const handleClick = (type) => {
-    if(type == 'resume'){
-      setAlertData({severity:"success", alertMessage:"Resume downloaded successfully"})
-    }else if("validation"){
-      setAlertData({severity:"error", alertMessage:'All fields is required'})
+    if (type == 'resume') {
+      setAlertData({ severity: "success", alertMessage: "Resume downloaded successfully" })
+    } else if (type == "validation") {
+      setAlertData({ severity: "error", alertMessage: 'All fields is required' })
+    } else if (type == "response") {
+      setAlertData({ severity: "error", alertMessage: "Couldn't send email" })
     }
     setOpen(true);
 
@@ -90,10 +98,39 @@ const Home = () => {
     setOpen(false);
   };
 
+  const handleClickOpen = () => {
+    setOpenSuccess(true);
+  }
+
+  const handleClickClose = () => {
+    setOpenSuccess(false)
+  }
+
   const handelSend = () => {
-    if(name == '' || email == '' || message == ''){
+    if (name == '' || email == '' || message == '') {
       handleClick('validation')
     }
+
+    // fetch("http://localhost:8000/email", {
+    fetch("https://portfolio-backend-v1po.onrender.com/email", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email, message })
+    }).then((res) => {
+      return res.json();
+    }).then((res) => {
+      if (res.success) {
+        handleClickOpen();
+        setName("");
+        setEmail("");
+        setMessage("");
+      } else {
+        console.log("response: ", res.message)
+      }
+    }).catch((error) => {
+      console.log("Error: ", error)
+      handleClick('response')
+    })
   }
 
   useEffect(() => {
@@ -129,9 +166,9 @@ const Home = () => {
             <Typography sx={{ fontSize: isSmallDevice ? "20px" : '30px', fontWeight: 400, color: '#003140' }}>Hi there!</Typography>
             <Typography sx={{ fontSize: isSmallDevice ? "30px" : '50px', fontWeight: 800, color: '#003140' }}>I am sonu kumar</Typography>
             <ExampleComponent isSmallDevice={isSmallDevice} />
-            <Button variant='contained' sx={{ marginTop: "50px",padding:'0px', backgroundColor: "#00719C", '&:hover': { backgroundColor: "#003140" } }} onClick={()=>handleClick('resume')}>
-              <a className="button" style={{color:'white', textDecoration:'none', padding:"5px 10px"}} href={resume} download="sonu-kumar-resume.pdf">
-              Resume
+            <Button variant='contained' sx={{ marginTop: "50px", padding: '0px', backgroundColor: "#00719C", '&:hover': { backgroundColor: "#003140" } }} onClick={() => handleClick('resume')}>
+              <a className="button" style={{ color: 'white', textDecoration: 'none', padding: "5px 10px" }} href={resume} download="sonu-kumar-resume.pdf">
+                Resume
               </a>
             </Button>
           </Box>
@@ -286,16 +323,16 @@ const Home = () => {
 
             <Box>
               <Typography>Name:</Typography>
-              <TextField id="outlined-basic" sx={{ backgroundColor: 'white', borderRadius: "10px", width: isSmallDevice ? "85vw" : '300px' }} size='small' variant="outlined" value={name} onChange={(e)=> setName(e.target.value)} />
+              <TextField id="outlined-basic" sx={{ backgroundColor: 'white', borderRadius: "10px", width: isSmallDevice ? "85vw" : '300px' }} size='small' variant="outlined" value={name} onChange={(e) => setName(e.target.value)} />
             </Box>
             <Box>
               <Typography>Email:</Typography>
-              <TextField id="outlined-basic" sx={{ backgroundColor: 'white', borderRadius: "10px", width: isSmallDevice ? "85vw" : '300px' }} size='small' variant="outlined" value={email} onChange={(e)=> setEmail(e.target.value)}/>
+              <TextField id="outlined-basic" sx={{ backgroundColor: 'white', borderRadius: "10px", width: isSmallDevice ? "85vw" : '300px' }} size='small' variant="outlined" value={email} onChange={(e) => setEmail(e.target.value)} />
             </Box>
             <Box>
               <Typography>Message:</Typography>
-              <TextField id="outlined-basic" multiline minRows={3} sx={{ backgroundColor: 'white', borderRadius: "10px", width: isSmallDevice ? "85vw" : '300px' }} size='small' variant="outlined" 
-              value={message} onChange={(e)=> setMessage(e.target.value)}/>
+              <TextField id="outlined-basic" multiline minRows={3} sx={{ backgroundColor: 'white', borderRadius: "10px", width: isSmallDevice ? "85vw" : '300px' }} size='small' variant="outlined"
+                value={message} onChange={(e) => setMessage(e.target.value)} />
             </Box>
             <Box sx={{ width: isSmallDevice ? "85vw" : "300px", display: 'flex', justifyContent: "flex-end" }}>
               <Button variant='contained' sx={{ backgroundColor: "#00719C", '&:hover': { backgroundColor: "#003140" } }} onClick={handelSend} >send</Button>
@@ -329,7 +366,7 @@ const Home = () => {
         </Box>
       </Box>
 
-      <Snackbar anchorOrigin={{vertical:"bottom", horizontal:"right"}} open={open} autoHideDuration={3000} onClose={handleClose}>
+      <Snackbar anchorOrigin={{ vertical: "bottom", horizontal: "right" }} open={open} autoHideDuration={3000} onClose={handleClose}>
         <Alert
           onClose={handleClose}
           severity={alertData.severity}
@@ -339,6 +376,39 @@ const Home = () => {
           {alertData.alertMessage}
         </Alert>
       </Snackbar>
+
+      {/* mail success dialog */}
+      <>
+        <Dialog
+          open={openSuccess}
+          TransitionComponent={Transition}
+          keepMounted
+          onClose={handleClickClose}
+          aria-describedby="alert-dialog-slide-description"
+        >
+          <DialogContent style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: isSmallDevice ? "250px" : "500px", }}>
+            <Box
+              component="img"
+              sx={{
+                // height: 233,
+                width: isSmallDevice ? "50%" : "50%",
+                height: 'auto',
+              }}
+              alt="The house from the offer."
+              src={success}>
+            </Box>
+            <Box style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center", }}>
+              <Typography style={{ fontSize: "20px", fontWeight: "700" }}>Thank you!</Typography>
+              <Typography>I will contact you soon.</Typography>
+            </Box>
+          </DialogContent>
+          <DialogActions>
+            <Button variant='contained' sx={{ marginTop: "50px", backgroundColor: "#00719C", '&:hover': { backgroundColor: "#003140" } }} onClick={handleClickClose}>
+              OK
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </>
 
     </div>
   )
